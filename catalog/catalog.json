@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "min_engine_version": "0.1.5",
-  "released_at": "2026-09-29T10:34:59Z",
-  "release_sequence": 35,
+  "released_at": "2026-09-29T15:06:51Z",
+  "release_sequence": 36,
   "products": {
     "mycroft": {
       "version": "0.3.9",
@@ -607,13 +607,13 @@
       }
     },
     "splash": {
-      "version": "0.1.1",
+      "version": "0.1.2",
       "repo": "buriedsignals/splash",
-      "ref": "496a4320e0205a7bf9880fb6cd8c4dbfe261ef90",
+      "ref": "38de9a2451866add587a95cc2c1779dd765ff0b9",
       "entitlement": "splash.core",
       "install_contract": {
         "schema_version": "splash-install-contract/v1",
-        "source_commit": "496a4320e0205a7bf9880fb6cd8c4dbfe261ef90",
+        "source_commit": "38de9a2451866add587a95cc2c1779dd765ff0b9",
         "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "writer_mode": "engine_v2",
         "choice_schema": {
