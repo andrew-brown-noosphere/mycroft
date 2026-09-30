@@ -120,7 +120,6 @@ addEventListener("load", () => window.scrollTo(0, 0));
   --head-h: 72px;
   --col-1: min(420px, 100%);
   --col-read: 50ch;
-  --col-srv: 42ch;
   --col-h2: 16ch;
 
   /* border + radius */
@@ -618,6 +617,34 @@ body,
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 24px;
+}
+
+/* publisher credit · sits on the brand's baseline */
+.site-head__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.site-head__by {
+  font-family: var(--mono);
+  font-size: var(--cap-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--head-fg);
+  opacity: 0.6;
+  transition:
+    color var(--dur-3) var(--ease),
+    opacity var(--dur-1) var(--ease);
+}
+.site-head__by:hover {
+  opacity: 1;
+}
+/* a phone bar holds the brand and Install · the credit would push Install off-screen */
+@media (max-width: 480px) {
+  .site-head__by {
+    display: none;
+  }
 }
 
 /* nav */
@@ -2091,19 +2118,16 @@ button.day-card.is-settled:focus-visible {
   align-items: center;
 }
 
-/* ── 13 · Service items ──────────────────────────────────────── */
-.srv-list {
+/* ── 13 · Client list ────────────────────────────────────────── */
+.client-list {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-5);
   max-width: var(--col-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.srv {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-}
-.srv__title {
+.client-list li {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 800;
@@ -2111,22 +2135,11 @@ button.day-card.is-settled:focus-visible {
   line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--ink);
-  margin: 0;
+  padding: var(--sp-3) 0;
+  border-bottom: var(--hairline-dashed);
 }
-.srv__desc {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--ink-soft);
-  max-width: var(--col-srv);
-  margin: 0;
-}
-.srv__meta {
-  font-family: var(--mono);
-  font-size: var(--cap-sm);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin: var(--sp-1) 0 0;
+.client-list li:first-child {
+  padding-top: 0;
 }
 
 /* ── 14 · Signup ─────────────────────────────────────────────── */
@@ -3072,9 +3085,12 @@ html.js .is-in .tw__in {
      the 3D viewport instead of scrolling with the page-as-plane. -->
 <header class="site-head" role="banner">
   <div class="site-head__bar">
-    <a class="brand" href="#hero" aria-label="Mycroft, home">
-      Mycroft<em class="brand__dot">.</em>
-    </a>
+    <div class="site-head__brand">
+      <a class="brand" href="#hero" aria-label="Mycroft, home">
+        Mycroft<em class="brand__dot">.</em>
+      </a>
+      <a class="site-head__by" href="https://buriedsignals.com" target="_blank" rel="noreferrer">by Buried Signals</a>
+    </div>
 
 <div class="site-head__actions">
       <a class="btn btn--ghost btn--mono" href="https://github.com/buriedsignals/mycroft" target="_blank" rel="noreferrer">
@@ -3625,28 +3641,21 @@ html.js .is-in .tw__in {
 
       <div class="term term--studio" style="--delay: 140ms">
         <span class="term__pre">↳ on request</span>
-        <h3 class="term__name">Consulting</h3>
+        <h3 class="term__name">Hire me</h3>
         <span class="term__rule"></span>
 
         <div class="term__body">
-          <p class="term__sub"><em>I train newsrooms to investigate with AI, then help wire the tooling into real editorial workflows.</em></p>
+          <p class="term__sub"><em>I train newsrooms to investigate with AI. Talks, workshops, custom tooling, and investigation collaborations.</em></p>
 
-          <ul class="srv-list" role="list">
-            <li class="srv">
-              <h4 class="srv__title">Workshops &amp; training</h4>
-              <p class="srv__desc">Hands-on AI investigation with live stories.</p>
-              <p class="srv__meta">Le Temps · MAZ · Republik · 20 Minuten</p>
-            </li>
-            <li class="srv">
-              <h4 class="srv__title">Custom AI tooling</h4>
-              <p class="srv__desc">Wired into your editorial workflow.</p>
-              <p class="srv__meta">MediaStorm</p>
-            </li>
-            <li class="srv">
-              <h4 class="srv__title">Investigation collaborations</h4>
-              <p class="srv__desc">Visual production paired with field reporting.</p>
-              <p class="srv__meta">The New Humanitarian</p>
-            </li>
+          <ul class="client-list" role="list">
+            <li>Le Temps</li>
+            <li>Al Jazeera</li>
+            <li>MAZ Journalistenschule</li>
+            <li>Republik</li>
+            <li>20 Minuten</li>
+            <li>SRF</li>
+            <li>MediaStorm</li>
+            <li>The New Humanitarian</li>
           </ul>
 
           <div class="term__actions">
