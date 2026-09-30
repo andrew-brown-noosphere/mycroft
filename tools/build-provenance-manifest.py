@@ -44,6 +44,13 @@ def sha256_file(path: Path) -> tuple[str, int]:
     return digest.hexdigest(), total
 
 
+def canonical_hash(value: Any) -> str:
+    """SHA-256 over sorted, compact JSON."""
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
 def rel_path(path: Path, base: Path) -> str:
     try:
         return str(path.relative_to(base))
@@ -132,11 +139,15 @@ def evidence_entries(base: Path, evidence_bundle: dict[str, Any]) -> list[dict[s
 def build_manifest(base: Path, credential_id: str | None, endpoint: str | None) -> dict[str, Any]:
     evidence_bundle = load_json(base / "data/evidence-bundle.json")
     sift_manifest = load_json(base / "data/sift-manifest.json")
+    artifacts = artifact_entries(base)
     return {
         "schema_version": "1.0",
         "project": evidence_bundle.get("project") or base.name,
         "generated_at": now_iso(),
         "status": "unsigned",
+        # Identifies the exact set of files this manifest describes. The signer
+        # carries it through unchanged, so a receipt can be matched to its inputs.
+        "input_set_hash": canonical_hash(artifacts),
         "signing": {
             "profile": "noosphere-c2pa",
             "requires_api_key": True,
@@ -144,7 +155,7 @@ def build_manifest(base: Path, credential_id: str | None, endpoint: str | None) 
             "credential_id": credential_id,
             "endpoint": endpoint,
         },
-        "artifacts": artifact_entries(base),
+        "artifacts": artifacts,
         "claims": claim_entries(sift_manifest),
         "evidence": evidence_entries(base, evidence_bundle),
     }
@@ -152,6 +163,9 @@ def build_manifest(base: Path, credential_id: str | None, endpoint: str | None) 
 
 def post_for_signing(endpoint: str, manifest: dict[str, Any], artifact_path: str | None, credential_id: str | None, api_key: str | None = None) -> dict[str, Any]:
     payload = {
+        # The signer records the request under this product profile and echoes it
+        # back; without it the record falls back to the generic profile.
+        "profile": "mycroft",
         "artifact_path": artifact_path,
         "provenance_manifest": manifest,
         "credential_id": credential_id,
