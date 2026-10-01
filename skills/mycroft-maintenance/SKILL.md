@@ -15,12 +15,17 @@ Mycroft is a Goose profile, not a separate app.
 - Mycroft Goose profile: `~/.config/goose/mycroft`
 - Mycroft source checkout: `~/.local/share/goose/mycroft/source`
 - Mycroft plugin checkouts: `~/.local/share/goose/mycroft/plugins`
-- Mycroft vault: user-selected, usually `~/Documents/Mycroft`
-- Spotlight vault: user-selected, usually `~/Documents/Spotlight`
+- Mycroft wiki: user-selected, usually `~/Documents/OpenKnowledge/Mycroft`
+- Spotlight vault: user-selected, usually `~/Documents/OpenKnowledge/Spotlight`
 
 ## Update Path
 
-Automatic updates are deterministic shell work, not agent reasoning. Setup installs a weekly system job; Goose Desktop can trigger the same path through the `update-mycroft` recipe.
+Journalists update Mycroft in Indicator Labs (`https://buriedsignals.com/join`).
+Do not fetch a signed public-installer bundle or re-run `install.sh`.
+
+Automatic contributor updates for a private Splash-enabled git checkout are
+deterministic shell work, not agent reasoning. Goose Desktop can trigger the
+same path through the `update-mycroft` recipe.
 
 Run:
 
@@ -28,10 +33,14 @@ Run:
 mycroft update
 ```
 
-This calls `~/.local/bin/mycroft-update`, which fetches `origin main` and fast-forwards only:
+This calls `~/.local/bin/mycroft-update`, which fast-forwards only a private
+git checkout when `private-splash.enabled` is present:
 
 - `~/.local/share/goose/mycroft/source`
-- `~/.local/share/goose/mycroft/plugins/spotlight`, when installed
+
+Without that marker, the script fails closed and points at Indicator Labs.
+
+Spotlight is updated separately with `spotlight update`; Mycroft never updates or rewrites Spotlight's checkout.
 
 Source recipes and skills are loaded directly from the checkout, so recipe and skill changes apply after the update. After source updates, the updater refreshes `~/.config/goose/mycroft/SOUL.md`, regenerates `~/.config/goose/.goosehints` from the source instructions plus local install paths, refreshes provider JSON files that are already installed under Goose, and runs `mycroft doctor`.
 
@@ -53,8 +62,9 @@ The doctor checks:
 - Mycroft source checkout
 - selected skills
 - generated scheduled recipes
-- QMD CLI
+- OpenKnowledge CLI
 - Spotlight plugin, when installed
+- private Splash plugin and namespaced skills, when installed
 
 ## Rules
 

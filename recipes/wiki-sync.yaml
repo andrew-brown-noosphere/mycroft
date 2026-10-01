@@ -1,0 +1,81 @@
+version: "1.0.0"
+title: "Knowledge sync"
+description: "Journal findings from the current Goose session into the configured Knowledge Workspace with proper frontmatter and links."
+
+instructions: |
+  Load the Mycroft journalism instructions and knowledge-workspace skill.
+  Use OpenKnowledge for writes. Never silently fall back to direct files.
+
+parameters:
+  - key: vault_path
+    input_type: string
+    requirement: required
+    description: "OpenKnowledge project root"
+  - key: project
+    input_type: string
+    requirement: optional
+    description: "Investigation project slug (creates investigations/{project}/ tree). Leave empty for shared/."
+    default: ""
+  - key: findings
+    input_type: string
+    requirement: required
+    description: "The findings to write — free-text or structured (entities, sources, events)"
+
+extensions:
+  - type: builtin
+    name: developer
+  - type: stdio
+    name: openknowledge
+    cmd: ok
+    args: ["--cwd", "{{ vault_path }}", "mcp"]
+    # Goose advertises only the OpenKnowledge tools Mycroft uses (2026-09-14: 27 -> 15 tools, 27K -> 17K prompt tokens on this recipe).
+    available_tools: ["search", "exec", "write", "edit", "links", "lint", "history", "move", "delete"]
+
+prompt: |
+  Sync these findings into the Mycroft OpenKnowledge project rooted at `{{ vault_path }}`:
+
+  ```
+  {{ findings }}
+  ```
+
+  **Step 1 — Structure the findings** into:
+  - **Entities**: people, organizations, places (one note per entity under `shared/entities/`)
+  - **Sources**: documents, URLs, interviews (one note per source under `shared/sources/`)
+  - **Methodology**: techniques used, one note per technique under `shared/methodology/` (only if novel)
+  - **Project notes**: if {{ project }} is set, per-project notes under `investigations/{{ project }}/`
+
+  **Step 2 — For each note**:
+
+  Frontmatter template:
+  ```yaml
+  ---
+  type: [entity | source | methodology | investigation-note]
+  name: [canonical name]
+  aliases: [list of alternates]
+  tags: [tag1, tag2]
+  created: YYYY-MM-DD
+  updated: YYYY-MM-DD
+  project: [{{ project }} or "" if shared]
+  confidence: [verified | partial | unverified]
+  ---
+  ```
+
+  Body: concise. Wiki-links to related entities via `[[entity-name]]`. Evidence citations inline.
+
+  **Step 3 — Write through OpenKnowledge**:
+
+  Use `write` for new documents. Before a bounded `edit`, read the current document and target one exact occurrence. Read every result back and verify its content and links before reporting success.
+
+  **Step 4 — Report back**:
+  - List every file created / updated.
+  - Flag any entities that couldn't be fully resolved (ambiguous names, no confirming source).
+
+  **Rules**:
+  - Do not write to `consulting/` or `journals/` vaults — those are off-limits unless explicitly targeted.
+  - If OpenKnowledge fails, report exactly which documents were not written. Do not write elsewhere or claim that a durable outbox exists.
+  - Never fabricate entity details. If a fact is missing, leave the field blank rather than guessing.
+
+activities:
+  - "Sync these findings to Mycroft knowledge"
+  - "Write these entities and sources into investigations/{{ project }}/"
+  - "Update a durable entity record"

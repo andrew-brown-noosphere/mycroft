@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
+# This fail-closed pointer does not uninstall Mycroft. Indicator Labs owns the
+# managed path; Engine owns the open-source path.
 set -euo pipefail
 
-channel="$HOME/.local/share/buriedsignals/public-installer/mycroft"
-bootstrap="$channel/bootstrap.sh"
-if [ ! -f "$bootstrap" ]; then
-  echo "Mycroft uninstall receipt channel is missing; no files were removed." >&2
-  exit 1
-fi
+JOIN='https://buriedsignals.com/join'
 
-args=(--product mycroft --runtime goose --action uninstall)
-for arg in "$@"; do
-  case "$arg" in
-    --remove-data|--force|--dry-run) args+=("$arg") ;;
-    *) echo "usage: mycroft-uninstall [--remove-data] [--force] [--dry-run]" >&2; exit 2 ;;
-  esac
-done
-bash "$bootstrap" "${args[@]}"
+cat <<EOF
+This script is a fail-closed pointer; it does not uninstall Mycroft.
+
+Managed users: uninstall in Indicator Labs at $JOIN
+Open-source users: review and apply: bsig plan uninstall mycroft
+
+There is no signed public-installer uninstall channel.
+EOF
+exit 1

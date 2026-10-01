@@ -14,9 +14,8 @@ Mycroft is an extension pack for [Goose](https://goose-docs.ai/) built for inves
 git clone https://github.com/buriedsignals/mycroft.git
 cd mycroft
 
-# Preview the setup page locally
-open index.html       # landing
-open setup.html       # install landing page
+# Preview the landing page locally
+open index.html       # landing; Set up goes to buriedsignals.com/join
 
 # Validate all recipes + configs
 python3 tools/validate-recipes.py
@@ -26,7 +25,7 @@ No build step. The repo is static files — HTML, YAML, JSON, SVG, Markdown.
 
 ## Adding a recipe
 
-1. Drop a new `.yaml` file under `recipes/` (or `recipes/apify-social/` for social scrapers).
+1. Drop a new `.yaml` file directly under `recipes/` (Goose does not scan subfolders, and a `/` in a recipe name is read as a file path; social scrapers use the `apify-` prefix).
 2. Follow the [Goose Recipe reference](https://goose-docs.ai/docs/guides/recipes/recipe-reference).
 3. Required fields: `version`, `title`, `description`, and at least one of `instructions` / `prompt`.
 4. Run `python3 tools/validate-recipes.py` — commit only if it passes.
@@ -53,7 +52,7 @@ Conventional style appreciated:
 ## PR checklist
 
 - [ ] `python3 tools/validate-recipes.py` passes
-- [ ] HTML validates (`bash tests/install-sh-check.sh && python3 tests/setup-server-check.py`)
+- [ ] HTML and journalist CTAs validate (`bash tests/install-sh-check.sh && bash tests/journalist-install-cta-check.sh`)
 - [ ] No API keys, no PII, no secrets in the diff
 - [ ] `CHANGELOG.md` updated under `[Unreleased]` if user-visible
 - [ ] For plugin integration changes, [`docs/plugin-authoring.md`](docs/plugin-authoring.md) updated

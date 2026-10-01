@@ -54,10 +54,10 @@
         "schedules": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["morning_brief", "vault_audit"],
+          "required": ["morning_brief", "wiki_audit"],
           "properties": {
             "morning_brief": {"type": ["string", "null"]},
-            "vault_audit": {"type": ["string", "null"]}
+            "wiki_audit": {"type": ["string", "null"]}
           }
         }
       }
@@ -95,8 +95,8 @@
       "additionalProperties": false,
       "required": ["search", "scrape", "firecrawl"],
       "properties": {
-        "search": {"const": "searxng"},
-        "scrape": {"const": "crawl4ai"},
+        "search": {"enum": ["searxng", "firecrawl"]},
+        "scrape": {"enum": ["crawl4ai", "firecrawl"]},
         "firecrawl": {"enum": ["disabled", "fallback"]}
       }
     },
@@ -121,7 +121,7 @@
           "properties": {
             "enabled": {"type": "boolean"},
             "path": {"type": ["string", "null"]},
-            "inherits_mycroft_sovereignty": {"const": true}
+            "inherits_mycroft_sovereignty": {"const": false}
           }
         },
         "scoutpost": {

@@ -13,11 +13,22 @@ configuration writer so provider choices, Goose behavior, and OpenKnowledge
 paths remain compatible; Engine owns the generated acquisition and lifecycle
 contract, while the product phase fills that declared ownership boundary.
 
+The normalized acquisition contract selects a pair: SearXNG search with Crawl4AI
+scrape, or Firecrawl search with Firecrawl scrape. `firecrawl: "fallback"` permits
+cloud fallback for the local pair and is required for the API-only pair.
+`tools/acquisition_policy.py` loads that selection for acquisition entrypoints,
+doctor, and private-update provisioning. It honors `MYCROFT_CONFIG`, profile
+overrides, and Goose's native Unix/Windows config location. Invalid or explicitly
+missing selected configuration fails closed; an unmanaged tool without a default
+profile retains local-only acquisition. Provider availability never changes
+permission to use cloud acquisition.
+
 Mycroft is a Goose extension pack, not a fork of Goose.
 
 The installer sets up Goose separately, then layers Mycroft configuration on top:
 
-- provider JSON files in `~/.config/goose/custom_providers/`
+- provider entries written into Goose's own config (Goose 1.48+ no longer
+  loads custom-provider JSON; the Public AI route uses the Engine's loopback adapter)
 - global Goose hints at `~/.config/goose/.goosehints`
 - Mycroft Goose profile under `~/.config/goose/mycroft/`
 - updateable Mycroft source checkout under `~/.local/share/goose/mycroft/source/`
@@ -27,7 +38,7 @@ The installer sets up Goose separately, then layers Mycroft configuration on top
 - generated scheduled recipes under `~/.config/goose/mycroft/generated-recipes`
 - local runtime config at `~/.config/goose/mycroft/mycroft-config.json`
 - fallback script secrets at `~/.config/goose/mycroft/.env`
-- QMD local markdown search collections for the Mycroft and Spotlight vaults
+- OpenKnowledge workspace access for durable Mycroft knowledge
 
 Goose stays current through Goose's own update path, such as Homebrew for the
 Desktop cask and the Goose CLI updater. Mycroft's updater applies the latest
@@ -43,9 +54,9 @@ Mycroft uses two Goose context mechanisms:
 
 The soul file gives Goose the Mycroft identity, voice, and core operating principles. It stays concise because persistent instructions are injected every turn.
 
-## Vaults
+## Knowledge workspaces
 
-Mycroft and Spotlight use separate Obsidian vaults.
+Mycroft and Spotlight use separate OpenKnowledge workspaces and separate product configurations.
 
 Mycroft is durable knowledge and publishing support:
 
@@ -66,12 +77,15 @@ Spotlight is active OSINT casework:
 - `exports/`
 - `handoff-to-mycroft/`
 
-Goose instructions include both paths when Spotlight is enabled, plus the Spotlight ingest target back into the Mycroft vault.
+Mycroft does not install Spotlight. Indicator Lab can install both as sibling
+products. If Spotlight is already present, Mycroft records its install,
+workspace, and case paths so the `spotlight-case` recipe can launch Spotlight
+(Spotlight owns the brief gate) or read an existing case without copying live
+files into the Mycroft wiki. Spotlight remains responsible for its own
+configuration, projection, runtime, doctor, and updates.
 
-## QMD
+## Knowledge workspace
 
-QMD is the local markdown search dependency used by Mycroft and Spotlight.
-
-Setup installs the CLI with `npm install -g @tobilu/qmd`, registers the Mycroft vault as collection `mycroft`, registers the Spotlight vault as collection `spotlight` when enabled, and runs `qmd update`.
-
-QMD also provides an MCP server through `qmd mcp`; agents that support MCP can use that server directly. Spotlight's `query-vault` verb is backed by `BUN_INSTALL="" qmd query`.
+OpenKnowledge is the primary interface for durable Mycroft knowledge. Active
+Spotlight cases remain outside that workspace and are read directly through the
+read-only case adapter described by the `knowledge-workspace` skill.

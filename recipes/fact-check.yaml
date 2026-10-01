@@ -4,15 +4,15 @@ description: "Run SIFT methodology against a draft article. Returns per-claim ve
 
 instructions: |
   Load the Mycroft journalism instructions (ethics, SIFT, no fabrication) as session context.
-  Load $MYCROFT_DIR/skills/fact-check/SKILL.md before checking claims.
+  Load "$MYCROFT_DIR/skills/fact-check/SKILL.md" before checking claims.
   Apply SIFT rigorously; each factual claim gets a specific verdict, never a vague hedge.
   Do not rewrite the draft; do not moralise. Report, let the journalist decide.
   Provenance is default but not mandatory: attempt evidence capture, validation,
   and manifest generation for every fact-check, but do not fail the fact-check
   unless strict provenance is requested.
 
-  IMPORTANT: Use `mycroft-fetch` for web fetches (sovereign default: Crawl4AI
-  scrape / SearXNG search, with Firecrawl as fallback) — never raw firecrawl,
+  IMPORTANT: Use `mycroft-fetch` for web fetches through the installed acquisition
+  policy (local SearXNG/Crawl4AI or Firecrawl) — never raw firecrawl,
   curl, or WebFetch.
   This captures evidence records (URL, local artifact, SHA-256 hash, timestamp)
   for grounding and optional C2PA package signing.
@@ -68,11 +68,14 @@ prompt: |
 
   Process:
 
-  1. Extract every factual claim: numbers, dates, quotes, named individuals, events, attributions, causal assertions.
+  1. Extract every factual claim before verifying any, following
+     `$MYCROFT_DIR/skills/fact-check/references/extraction.md` (write `claims.md` first).
+     Then run `python3 "$MYCROFT_DIR/tools/claim-density.py" <draft> <claim count>`;
+     exit 1 means the list is thin, reopen extraction.
 
   2. Check local prior context before broad web search:
-     - Search the Mycroft vault with QMD for known entities, prior source notes, and earlier verdicts.
-     - If Spotlight is installed, search the Spotlight vault for related active case evidence.
+     - Search durable Mycroft knowledge through OpenKnowledge for known entities, prior source notes, and earlier verdicts.
+     - If Spotlight is installed, read related active-case evidence through the direct, read-only case adapter described by the knowledge-workspace skill.
      - Treat prior context as evidence to inspect, not as automatic truth.
 
   3. For each claim, assign a verdict from this closed set:
@@ -88,6 +91,11 @@ prompt: |
      - This captures evidence IDs, source URLs, timestamps, local artifact paths, and SHA-256 hashes.
      - Never use WebFetch, curl, raw firecrawl, or any other browser tool for normal fetches.
      - If `mycroft-fetch` is unavailable, continue only if the fact-check can still be cited clearly; report "provenance incomplete: mycroft-fetch unavailable".
+     - For numbers, papers, filings and rulings, pull the primary record with the skill's
+       lookup tools (see `references/routes/`), e.g.
+       `python3 "$MYCROFT_DIR/tools/marketdata.py" --evidence fred DGS10 --above 4.79` or
+       `python3 "$MYCROFT_DIR/tools/evidence-lookup.py" --evidence crossref "<title>"`.
+       `--evidence` stores the raw response as an `E-*` item; cite its id and URL.
 
   5. Output as a markdown table:
 
@@ -126,7 +134,7 @@ prompt: |
          {
            "id": "E-xxx",
            "source_url": "<source URL>",
-           "acquisition_method": "<from mycroft-fetch: crawl4ai|searxng|firecrawl>",
+           "acquisition_method": "<from mycroft-fetch: crawl4ai|searxng|firecrawl; api for the lookup tools>",
            "accessed_at": "<from mycroft-fetch>",
            "raw_path": "<from mycroft-fetch>",
            "sha256": "<64 lowercase hex from mycroft-fetch>",

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Static checks for the canonical installer (install.sh).
-# Replaces the old setup-generator-check.js script assertions: install.sh is
-# now a real file, so we lint it directly instead of string-building it in JS.
+# Both Engine paths are documented; the legacy bash installer remains fail closed.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -16,120 +14,75 @@ includes() {
 excludes() {
   if grep -qF -- "$1" install.sh; then note "stale fragment present: $1"; fi
 }
+file_includes() {
+  grep -qF -- "$2" "$1" || note "missing in $1: $2"
+}
+file_excludes() {
+  if grep -qF -- "$2" "$1"; then note "stale fragment in $1: $2"; fi
+}
 
-# Layout + profile contract
-includes 'GOOSE_CONFIG="$XDG_CONFIG_HOME/goose"'
-includes 'PROVIDERS_DST="$GOOSE_CONFIG/custom_providers"'
-includes 'MYCROFT_PROFILE_DIR="$GOOSE_CONFIG/mycroft"'
-includes 'MYCROFT_DATA_DIR="$XDG_DATA_HOME/goose/mycroft"'
-includes 'MYCROFT_DIR="$MYCROFT_DATA_DIR/source"'
-includes 'MYCROFT_SKILL_REGISTRY="$MYCROFT_PROFILE_DIR/skill-registry.json"'
-includes 'MYCROFT_GENERATED_RECIPES="$MYCROFT_PROFILE_DIR/generated-recipes"'
-includes 'GOOSE_RECIPE_PATH_VALUE="$MYCROFT_DIR/recipes:$MYCROFT_GENERATED_RECIPES"'
-
-# Configurator phase: the public path uses the product writer directly.
-includes 'python3 "$MYCROFT_DIR/install/setup_server.py" --profile-dir "$MYCROFT_PROFILE_DIR" --repo-dir "$MYCROFT_DIR" --legacy-only'
-includes 'MYCROFT_SETUP_CONFIG="$MYCROFT_PROFILE_DIR/setup-config.env"'
-includes '. "$MYCROFT_SETUP_CONFIG"'
-includes 'ensure_openknowledge'
-includes 'npm install -g "@inkeep/open-knowledge@$pin"'
-includes 'have() { type -P "$1" >/dev/null 2>&1; }'
-includes 'export GOOSE_TELEMETRY_ENABLED="${GOOSE_TELEMETRY_ENABLED:-false}"'
-excludes 'have() { command -v "$1" >/dev/null 2>&1; }'
-includes 'navigator'
-excludes 'bootstrap_engine'
-excludes 'minisign -Vm'
-excludes '"$ENGINE_BINARY"'
-excludes 'BSIG_BIN'
-excludes 'buriedsignals/engine'
+includes 'https://buriedsignals.com/join'
+includes 'Indicator Labs'
+includes 'There is no localhost configure.html server'
+includes 'Do not use Mycroft fact-check or Spotlight for software code'
+includes "host's compound-engineering or code-review workflow."
+includes 'Open-source and agent-led users'
+includes 'bsig'
+includes 'stdin/keychain flow'
+excludes 'setup_server.py'
 excludes 'engine_bridge.py'
-includes 'public bootstrap digest did not verify'
-# No keys or choices baked into the script itself
+excludes 'bootstrap.sh'
+excludes 'PUBLIC_RELEASE_BASE'
+excludes 'curl -fL'
 excludes '__CFG__'
 excludes 'ENV_EOF'
 
-# CLI + skills
-includes 'ln -sf "$MYCROFT_DIR/scripts/mycroft-fetch" "$HOME/.local/bin/mycroft-fetch"'
-includes 'ln -sf "$MYCROFT_DIR/scripts/mycroft_safe.py" "$HOME/.local/bin/mycroft-safe"'
-includes 'ln -sf "$MYCROFT_DIR/scripts/mycroft-doctor" "$HOME/.local/bin/mycroft-doctor"'
-includes 'ln -sf "$MYCROFT_DIR/scripts/mycroft-update" "$HOME/.local/bin/mycroft-update"'
-includes 'ln -sf "$MYCROFT_DIR/scripts/navigator-connect" "$HOME/.local/bin/mycroft-navigator"'
+if [ -e install/configure.html ]; then note "install/configure.html must be deleted"; fi
+if [ -e install/setup_server.py ]; then note "install/setup_server.py must be deleted"; fi
+if [ -e install/engine_bridge.py ]; then note "install/engine_bridge.py must be deleted"; fi
+if [ -e setup.html ]; then note "setup.html must be deleted"; fi
 
-# Tooling installs
-includes '. "$PREFLIGHT_HELPER"'
-includes 'mycroft_prepare_npm_prefix || exit 1'
-includes 'mycroft_preflight_linux_build_tools || exit 1'
-includes 'brew install --cask block-goose'
-includes 'npm install -g "firecrawl-cli@$pin"'
-includes 'npm install -g "@tobilu/qmd@$pin"'
-includes 'qmd collection add "$VAULT_PATH" --name mycroft'
-includes 'export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"'
-includes 'GOOSE_RECIPE_PATH="$GOOSE_RECIPE_PATH_VALUE" "$HOME/.local/bin/mycroft-doctor"'
-includes 'Mycroft doctor failed; setup is incomplete and the installer is exiting non-zero.'
+file_includes skills/fact-check/SKILL.md 'Do not use this skill for software code'
+file_includes skills/fact-check/SKILL.md 'route those to compound-engineering.'
+file_includes instructions/mycroft-soul.md 'Do not route software code'
+file_includes instructions/mycroft-soul.md "Use the host's compound-engineering or code-review workflow."
+file_excludes skills/fact-check/SKILL.md 'escalating to Spotlight for deeper adversarial review'
+file_excludes skills/fact-check/SKILL.md 'If Spotlight is installed and the request needs adversarial review'
+file_excludes instructions/mycroft-soul.md 'Escalate to Spotlight when the work needs adversarial review'
 
-# Goose configuration + schedules
-includes 'configure_goose_persistent_defaults'
-includes 'set_goose_config_key GOOSE_PROVIDER'
-includes 'goose configure set-secret'
-includes 'goose schedule add --schedule-id mycroft-morning-brief'
-includes 'goose schedule add --schedule-id mycroft-vault-audit'
-includes 'recipes/start.yaml'
-includes 'morning-brief-preflight.yaml'
-includes 'START_HERE.md'
+bash -n scripts/mycroft-update || { echo "scripts/mycroft-update does not parse"; exit 1; }
+bash -n scripts/mycroft-uninstall || { echo "scripts/mycroft-uninstall does not parse"; exit 1; }
+file_excludes scripts/mycroft-update 'public-installer/mycroft'
+file_excludes scripts/mycroft-update 'applicator.py'
+file_excludes scripts/mycroft-update 'bootstrap.sh'
+file_includes scripts/mycroft-update 'bsig plan update mycroft'
+file_excludes scripts/mycroft-update 'mycroft.buriedsignals.com/install.sh'
+file_includes scripts/mycroft-update 'https://buriedsignals.com/join'
+file_includes scripts/mycroft-update 'Indicator Labs'
+file_excludes scripts/mycroft-uninstall 'bootstrap.sh'
+file_includes scripts/mycroft-uninstall 'bsig plan uninstall mycroft'
+file_excludes scripts/mycroft-uninstall 'applicator.py'
+file_includes scripts/mycroft-uninstall 'https://buriedsignals.com/join'
+file_includes scripts/mycroft-uninstall 'Indicator Labs'
 
-# Local model path
-includes 'install_local_model'
-includes 'register_local_model_in_goose'
-includes '$XDG_DATA_HOME/goose/models'
-
-# Updater cron/timer (the updater logic itself now lives in scripts/mycroft-update)
-includes 'git merge --ff-only origin/main'
-includes 'mycroft-update.timer'
-includes '15 10 * * 1'
-
-# CLI wrappers are repo scripts (symlinked, self-updating), so lint + contract-check
-# them directly rather than as heredocs inside install.sh.
-bash -n scripts/mycroft-doctor || note "scripts/mycroft-doctor does not parse"
-bash -n scripts/mycroft-update || note "scripts/mycroft-update does not parse"
-bash -n scripts/mycroft-uninstall || note "scripts/mycroft-uninstall does not parse"
-[ -x scripts/mycroft-uninstall ] || note "scripts/mycroft-uninstall must be executable so install does not dirty the checkout"
-wincludes() { grep -qF -- "$2" "$1" || note "missing in $1: $2"; }
-wincludes scripts/mycroft-doctor 'export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"'
-wincludes scripts/mycroft-doctor '"shell-safety skill"'
-wincludes scripts/mycroft-doctor '"epistemic-grounding skill"'
-wincludes scripts/mycroft-update 'doctor failed after update; rolling back app checkouts'
-wincludes scripts/mycroft-update 'provision-sovereign.sh'
-wincludes scripts/mycroft-update 'latest signed public bundle'
-wincludes scripts/mycroft-update 'releases/latest/download'
-wincludes scripts/mycroft-update 'config.get("plugins", {}).get("scoutpost", {}).get("enabled") is True'
-if grep -qF -- 'SPOTLIGHT_MONITORING_BACKEND' scripts/mycroft-update; then note 'legacy Spotlight-owned Scoutpost marker remains in updater'; fi
-if grep -qF -- 'SPOTLIGHT_SCOUT_REQUESTS' scripts/mycroft-update; then note 'legacy Spotlight scout-request marker remains in updater'; fi
-
-# Getting-started guide written by configurator, opened at the end
-includes 'GETTING_STARTED="$MYCROFT_PROFILE_DIR/getting-started.html"'
-includes 'open "$GETTING_STARTED"'
-
-# Spotlight contract (current spotlight repo: dev-browser primary, no handoff,
-# canonical .spotlight-config.json, OSINT_NAV_API_KEY naming)
-includes 'git clone https://github.com/buriedsignals/spotlight.git "$SPOTLIGHT_DIR"'
-includes 'npm install -g dev-browser@0.2.8'
-includes '"runtime": "goose"'
-includes '"search_library": "firecrawl"'
-includes '"case_workspace_root": "$SPOTLIGHT_VAULT_PATH/cases"'
-includes '"dev_browser": {"enabled": $DEVBROWSER_JSON'
-excludes '"scoutpost": {"enabled": $SCOUTPOST_JSON, "status": "unknown", "source": "mycroft-setup"'
-includes '[ -n "${OSINT_NAV_API_KEY:-}" ] && store_goose_secret OSINT_NAV_API_KEY'
-includes 'integrations/preflight.py'
-excludes 'handoff-to-mycroft'
-excludes 'BROWSERUSE'
-excludes 'OSINT_NAVIGATOR_API_KEY'
-excludes 'browser_use'
-
-# Seed-note dates: quoted heredocs rely on the writer substituting $TODAY
-includes 'sed "s/\$TODAY/$TODAY/g" > "$path"'
-
-if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck -S error install.sh || fail=1
+if bash scripts/mycroft-uninstall >/tmp/mycroft-uninstall-pointer.out 2>&1; then
+  note "mycroft-uninstall must exit non-zero; product uninstall is Indicator Labs"
+else
+  :
 fi
+if ! grep -qF 'https://buriedsignals.com/join' /tmp/mycroft-uninstall-pointer.out; then
+  note "mycroft-uninstall output missing Indicator Labs join URL"
+fi
+rm -f /tmp/mycroft-uninstall-pointer.out
+
+if ! bash install.sh >/tmp/mycroft-install-pointer.out 2>&1; then
+  :
+else
+  note "install.sh must exit non-zero so old curl|bash pipes fail closed"
+fi
+if ! grep -qF 'https://buriedsignals.com/join' /tmp/mycroft-install-pointer.out; then
+  note "install.sh output missing Indicator Labs join URL"
+fi
+rm -f /tmp/mycroft-install-pointer.out
 
 [ "$fail" = "0" ] && echo "install.sh checks passed" || exit 1

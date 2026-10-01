@@ -20,7 +20,7 @@
       "generated_recipes": {"$input": "goose.generated_recipes"},
       "schedules": {
         "morning_brief": {"$input": "goose.schedules.morning_brief"},
-        "vault_audit": {"$input": "goose.schedules.vault_audit"}
+        "wiki_audit": {"$input": "goose.schedules.wiki_audit"}
       }
     },
     "provider": {
@@ -49,7 +49,7 @@
       "spotlight": {
         "enabled": {"$input": "plugins.spotlight.enabled"},
         "path": {"$input": "plugins.spotlight.path"},
-        "inherits_mycroft_sovereignty": true
+        "inherits_mycroft_sovereignty": false
       },
       "scoutpost": {
         "enabled": {"$input": "plugins.scoutpost.enabled"},

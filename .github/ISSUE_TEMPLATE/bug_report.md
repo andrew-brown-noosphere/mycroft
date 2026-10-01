@@ -10,7 +10,7 @@ labels: bug
 **Reproduce**
 <!--
 Steps to trigger the bug. Include the recipe, the command, or the page URL.
-For setup.html bugs: attach (or redact) the generated mycroft-setup.command excerpt.
+For landing bugs: attach a screenshot of index.html.
 -->
 
 **Environment**

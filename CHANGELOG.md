@@ -4,6 +4,44 @@ All notable changes to this project will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Acquisition honors the installed provider policy for search, scraping, provenance,
+  diagnostics, and private-update provisioning. Firecrawl-only uses the API directly
+  without probing or installing local SearXNG/Crawl4AI/Chromium; cloud fallback for
+  local acquisition now requires explicit configuration. Invalid or explicitly
+  missing selected config fails closed.
+- Fact-check: claim-extraction rules and density gate, evidence route files, and primary-record
+  lookup tools (`tools/evidence-lookup.py`, `tools/marketdata.py`), adapted from Big If True by Verso.
+- `mycroft-fetch` stores artifacts under `raw/`; a JSON search body no longer overwrites its own record.
+
+- Retire new Goose morning-brief schedules, preserve inactive legacy preferences, and gate upgrades on verified scheduler handover. Keep the separate wiki audit and reporting data.
+
+- Add resumable morning brief setup in Goose with typed Engine verification, optional AgentMail delivery and separate newsletter subscription handoffs.
+
+## 2026-09-14 — Trim the OpenKnowledge tool surface; retire the Featherless contract id
+
+### Changed
+- `wiki-qa`, `wiki-audit`, `wiki-sync` and `morning-brief` declare
+  `available_tools` on their OpenKnowledge extension so Goose advertises only
+  the nine tools these recipes and the knowledge skills use (search, exec,
+  write, edit, links, lint, history, move, delete). Measured on Goose 1.50:
+  27 -> 15 tools and 27K -> 17K prompt tokens on the first turn of `wiki-qa`.
+- The recipes no longer default `vault_path` to a `~` path: Goose does not
+  expand it, so the OpenKnowledge extension failed to start (`chdir ENOENT`)
+  and the recipe silently continued without the vault. The path is required and
+  must be absolute; Engine-generated schedules pass it.
+- Install contract: the provider id enum names `openrouter` instead of the
+  retired `featherless`; fixtures follow (Mistral Large 2512 on OpenRouter).
+
+## 2026-09-01 — Open-source credential guidance
+
+### Changed
+- Install and security guidance now distinguishes Indicator Labs' managed
+  credential prompts from the public Engine path. Open-source users receive the
+  exact Engine credential IDs and use the protected `bsig` stdin/keychain flow;
+  no Mycroft localhost page collects secrets.
+
 ## 2026-07-08 — Sovereign web stack (SearXNG search + Crawl4AI scrape; Firecrawl demoted)
 
 ### Changed
@@ -44,9 +82,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+- Retire new Goose morning-brief schedules, preserve inactive legacy preferences, and gate upgrades on verified scheduler handover. Keep the separate wiki audit and reporting data.
+
+- Add resumable morning brief setup in Goose with typed Engine verification, optional AgentMail delivery and separate newsletter subscription handoffs.
+
 > **Next tag will be [0.2.0]** (pre-1.0 minor bump): fact-check output contract
 > changes shape, which is a breaking change for downstream consumers parsing
 > `cases/{project}/data/fact-check.json` or the legacy SIFT manifest.
+
+### Added — landing-page skills index
+
+- Added a centered “See all skills” dialog that reads the installed set from
+  `skills.manifest` and each skill preview from its `SKILL.md` metadata, keeping
+  the landing page synchronized with the files Mycroft installs.
+
+### Changed — signed catalog
+
+- Republished engine catalog release sequence 24. The hosted copy now includes
+  the Splash product and its skill rows. `catalog/` remains a byte-identical
+  publish artifact; do not hand-edit it.
+
+### Changed — OpenKnowledge and Spotlight ownership
+
+- Mycroft writes durable notes through OpenKnowledge in its configured project.
+  The installer and shipped skill set no longer include a second note application.
+- Spotlight retains sole ownership of active cases and its approved knowledge
+  projection. Mycroft can search and read those results but cannot write them.
+- Selecting Spotlight in Mycroft setup now delegates to Spotlight's canonical
+  signed installer. Mycroft no longer clones, configures, or updates Spotlight.
+
+### Changed — cloud inference default
+
+- Restored OpenRouter as the guided install's recommended default, using
+  Goose's built-in `openrouter` provider and `z-ai/glm-5.2`.
+- OpenRouter selection configures Goose to attach `provider.zdr=true` to every
+  inference request and verifies that GLM-5.2 has a healthy ZDR endpoint during
+  setup. It also requires account-level ZDR confirmation for OpenRouter's
+  Non-frontier model group. Fireworks remains available as the direct-host
+  GLM-5.2 alternative.
+- The public `setup.html` now presents OpenRouter, Fireworks, and on-device
+  inference as distinct options; provider selection and key entry still happen
+  only in the localhost configurator opened by the public installer.
+
+### Fixed — skill routing
+
+- Scoped Mycroft fact-check and Spotlight escalation to journalistic and editorial verification.
+  Software code, architecture, PRDs, engineering plans, threat models, security reviews, and
+  release reviews now route to the host's compound-engineering or code-review workflow.
 
 ### Changed — Scoutpost ownership
 
@@ -148,7 +230,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
   vocabulary consistency with sift-manifest.
 - `recipes/fact-check-c2pa.yaml` JSON template updated to the 7-field shape.
 - `fact-check/SKILL.md` now requires `[epistemic-grounding, shell-safety]`.
-- `obsidian-ingest/SKILL.md` (public) now requires `shell-safety` and includes
+- The ingest skill now requires `shell-safety` and includes
   a Safety section documenting scraped content as untrusted shell input.
 - `mycroft-doctor` exports `PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"`
   at the top so the doctor works correctly when run from cron, Goose recipes,
@@ -164,7 +246,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
   via `mycroft_safe.py` before passing to bash, curl, or any CLI that
   interprets quotes/dollars/backticks. Forbids `eval` and `bash -c "..."` on
   untrusted values.
-- `obsidian-ingest` (public skill) now documents that scraped markdown should
+- The ingest skill now documents that scraped markdown should
   be written via stdin or temp file rather than interpolated into a CLI
   `content="..."` argv element.
 

@@ -120,7 +120,6 @@ addEventListener("load", () => window.scrollTo(0, 0));
   --head-h: 72px;
   --col-1: min(420px, 100%);
   --col-read: 50ch;
-  --col-srv: 42ch;
   --col-h2: 16ch;
 
   /* border + radius */
@@ -620,6 +619,41 @@ body,
   gap: 24px;
 }
 
+/* publisher credit · centred on the brand */
+.site-head__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.site-head__by {
+  font-family: var(--mono);
+  font-size: var(--cap-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--head-fg);
+  opacity: 0.6;
+  transition:
+    color var(--dur-3) var(--ease),
+    opacity var(--dur-1) var(--ease);
+}
+.site-head__by:hover {
+  opacity: 1;
+}
+/* on a phone the credit sits under the brand · beside it, it would push Install off-screen */
+@media (max-width: 480px) {
+  .site-head__brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .site-head__by {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    line-height: 1;
+  }
+}
+
 /* nav */
 .site-nav {
   display: none;
@@ -699,7 +733,7 @@ body,
 /* mobile drawer */
 @media (max-width: 979px) {
   /* Mobile: drop the burger nav entirely. Show only the brand + a single
-     prominent SETUP CTA. Per Tom's feedback — the dropdown menu adds
+     prominent Install CTA. Per Tom's feedback — the dropdown menu adds
      friction on small screens; surfacing the primary action is enough. */
   .site-head__menu { display: none !important; }
   .site-nav { display: none !important; }
@@ -823,8 +857,19 @@ main,
   margin: 0 auto var(--sp-6);
   max-width: 90%;
 }
+.hero__desc {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.15vw, 18px);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  max-width: 38rem;
+  margin: 0 auto var(--sp-6);
+  text-wrap: pretty;
+}
 .ctas--center {
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 /* ── Surface toggle (CLI ↔ Desktop) ──────────────────────────── */
@@ -1274,7 +1319,7 @@ a.card-int:hover {
   background: color-mix(in oklab, var(--vellum) 96%, var(--ink) 4%);
 }
 @media (min-width: 1100px) {
-  .sec--integrations .sec-head {
+  .sec--integrations .sec-head:has(.lead) {
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.82fr);
   }
 }
@@ -1285,11 +1330,17 @@ a.card-int:hover {
   gap: var(--sp-7);
   margin-bottom: var(--sp-9);
 }
+.sec-head:not(:has(.lead)) {
+  margin-bottom: var(--sp-7);
+}
 @media (min-width: 1100px) {
   .sec-head {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 80px;
     align-items: end;
+  }
+  .sec-head:not(:has(.lead)) {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1626,6 +1677,99 @@ button.day-card.is-settled:focus-visible {
   border-bottom-color: var(--oxide-active);
 }
 
+.skills-index-cta {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+.skills-dialog {
+  width: min(980px, calc(100vw - 40px));
+  max-height: min(86vh, 920px);
+  overflow: hidden;
+}
+.skills-dialog .skill-dialog__inner {
+  max-height: min(86vh, 920px);
+  overflow-y: auto;
+}
+.skills-dialog .skill-dialog__close {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 -34px auto;
+  background: #fbf6e8;
+}
+.skills-index__intro {
+  max-width: 62ch;
+}
+.skills-index__status {
+  font-family: var(--mono);
+  font-size: var(--cap-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin: 0 0 var(--sp-5);
+}
+.skills-index__status[hidden] {
+  display: none;
+}
+.skills-index__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: var(--hairline);
+}
+.skills-index__item {
+  padding: var(--sp-5) var(--sp-5) var(--sp-5) 0;
+  border-bottom: var(--hairline);
+}
+.skills-index__item:nth-child(even) {
+  padding-right: 0;
+  padding-left: var(--sp-5);
+  border-left: var(--hairline);
+}
+.skills-index__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--cap-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin: 0 0 var(--sp-3);
+}
+.skills-index__number {
+  color: var(--oxide);
+}
+.skills-index__name {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 var(--sp-3);
+}
+.skills-index__description {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 var(--sp-4);
+}
+.skills-index__link {
+  font-family: var(--mono);
+  font-size: var(--cap-sm);
+  letter-spacing: 0.05em;
+  color: var(--oxide);
+  border-bottom: 1px solid var(--rule);
+}
+.skills-index__link:hover {
+  color: var(--oxide-active);
+  border-bottom-color: var(--oxide-active);
+}
+
 .card__kicker {
   display: flex;
   justify-content: space-between;
@@ -1704,6 +1848,14 @@ button.day-card.is-settled:focus-visible {
   }
   .day-card {
     padding: 28px;
+  }
+  .skills-index__grid {
+    grid-template-columns: 1fr;
+  }
+  .skills-index__item,
+  .skills-index__item:nth-child(even) {
+    padding: var(--sp-5) 0;
+    border-left: 0;
   }
 }
 
@@ -1973,19 +2125,16 @@ button.day-card.is-settled:focus-visible {
   align-items: center;
 }
 
-/* ── 13 · Service items ──────────────────────────────────────── */
-.srv-list {
+/* ── 13 · Client list ────────────────────────────────────────── */
+.client-list {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-5);
   max-width: var(--col-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.srv {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-}
-.srv__title {
+.client-list li {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 800;
@@ -1993,22 +2142,11 @@ button.day-card.is-settled:focus-visible {
   line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--ink);
-  margin: 0;
+  padding: var(--sp-3) 0;
+  border-bottom: var(--hairline-dashed);
 }
-.srv__desc {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--ink-soft);
-  max-width: var(--col-srv);
-  margin: 0;
-}
-.srv__meta {
-  font-family: var(--mono);
-  font-size: var(--cap-sm);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin: var(--sp-1) 0 0;
+.client-list li:first-child {
+  padding-top: 0;
 }
 
 /* ── 14 · Signup ─────────────────────────────────────────────── */
@@ -2356,11 +2494,12 @@ button.day-card.is-settled:focus-visible {
   background: #161214;
   border-bottom: 1px solid #2a2426;
 }
-.terminal__bar > span {
+.terminal__bar > span:not(.terminal__label) {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   display: inline-block;
+  flex: 0 0 auto;
 }
 .terminal__bar > span:nth-child(1) {
   background: #d04848;
@@ -2378,6 +2517,10 @@ button.day-card.is-settled:focus-visible {
   text-transform: uppercase;
   color: rgba(232, 224, 207, 0.5);
   margin-left: var(--sp-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .terminal__body {
@@ -2949,16 +3092,19 @@ html.js .is-in .tw__in {
      the 3D viewport instead of scrolling with the page-as-plane. -->
 <header class="site-head" role="banner">
   <div class="site-head__bar">
-    <a class="brand" href="#hero" aria-label="Mycroft, home">
-      Mycroft<em class="brand__dot">.</em>
-    </a>
+    <div class="site-head__brand">
+      <a class="brand" href="#hero" aria-label="Mycroft, home">
+        Mycroft<em class="brand__dot">.</em>
+      </a>
+      <a class="site-head__by" href="https://buriedsignals.com" target="_blank" rel="noreferrer">by Buried Signals</a>
+    </div>
 
 <div class="site-head__actions">
       <a class="btn btn--ghost btn--mono" href="https://github.com/buriedsignals/mycroft" target="_blank" rel="noreferrer">
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.02c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.07.78 2.16v3.2c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
         Source
       </a>
-      <a class="btn btn--solid btn--setup" href="setup.html">Set up</a>
+      <a class="btn btn--solid btn--setup" href="https://buriedsignals.com/join">Install</a>
     </div>
 
   </div>
@@ -2977,10 +3123,14 @@ html.js .is-in .tw__in {
         Old-school reporting.<br><em>New-school machinery</em>
       </h1>
 
-      <p class="hero__line" data-reveal style="--delay: 220ms">— Open source · Local-first · No lock-in · No surveillance —</p>
+      <p class="hero__desc" data-reveal style="--delay: 220ms">A Goose extension pack with <span data-skills-count>journalism skills</span>, a local searchable wiki, and an optional on-device model — connected to Splash, Spotlight, Navigator, and Scoutpost.</p>
 
       <div class="ctas ctas--center" data-reveal style="--delay: 380ms">
-        <a class="btn btn--solid btn--setup" href="setup.html">Set up</a>
+        <a class="btn btn--solid btn--setup" href="https://buriedsignals.com/join">Install</a>
+        <a class="btn btn--ghost btn--mono" href="https://github.com/buriedsignals/mycroft" target="_blank" rel="noreferrer">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.02c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.07.78 2.16v3.2c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+          GitHub
+        </a>
       </div>
     </div>
   </section>
@@ -2991,8 +3141,7 @@ html.js .is-in .tw__in {
     <header class="num" data-reveal><span class="num__n">02</span> What it does</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
-      <h2 class="display display--section">07:00 to <em>deadline</em></h2>
-      <p class="lead">A morning brief, a fast verification pass, then deeper source work. Mycroft is a workflow layer for the rhythm of a reporting day, not three boxed-off tricks.</p>
+      <h2 class="display display--section">An example <em>day</em></h2>
     </div>
 
     <div class="day-timeline">
@@ -3005,10 +3154,10 @@ html.js .is-in .tw__in {
           <span class="day-time__hour">07</span><span class="day-time__ampm">am</span>
         </aside>
         <button class="day-card" type="button" data-dialog="dlg-brief">
-          <p class="card__kicker"><span>§ Brief · <strong>Scoutpost</strong></span></p>
+          <p class="card__kicker"><span>§ Brief · <strong>Automation</strong></span></p>
           <h3 class="card__title">Your morning brief, <em>before coffee</em></h3>
-          <p class="card__body">A digest in your vault: 8 items ranked by editorial value — bookmarks, AgentMail, overnight web. Every claim cited.</p>
-          <p class="card__foot">8 items · cited · written to vault <span class="card__more">→ how it works</span></p>
+          <p class="card__body">A digest in your notes: overnight signals ranked by editorial value. Every claim cited.</p>
+          <p class="card__foot">8 items · cited · written locally <span class="card__more">→ how it works</span></p>
         </button>
       </article>
 
@@ -3043,7 +3192,7 @@ html.js .is-in .tw__in {
         <button class="day-card" type="button" data-dialog="dlg-interview">
           <p class="card__kicker"><span>§ Prep · <strong>Interviews</strong></span></p>
           <h3 class="card__title">Your interview, <em>prepped</em></h3>
-          <p class="card__body">A background dossier, question frames, and attribution ground rules — built from your vault before you dial.</p>
+          <p class="card__body">A background dossier, question frames, and attribution ground rules — built from your wiki before you dial.</p>
           <p class="card__foot">dossier · questions · attribution <span class="card__more">→ how it works</span></p>
         </button>
       </article>
@@ -3056,10 +3205,28 @@ html.js .is-in .tw__in {
           <p class="card__kicker"><span>§ Workspace · <strong>OpenKnowledge</strong></span></p>
           <h3 class="card__title">Your research, <em>stored locally</em></h3>
           <p class="card__body">Everything above lands in one local OpenKnowledge workspace. Sources, claims, briefs — searchable, linked, and yours.</p>
-          <p class="card__foot">markdown · linked · yours <span class="card__more">→ see the vault</span></p>
+          <p class="card__foot">markdown · linked · yours <span class="card__more">→ see the wiki</span></p>
         </button>
       </article>
     </div>
+
+    <div class="skills-index-cta" data-reveal>
+      <button class="btn btn--mono" type="button" data-dialog="dlg-skills">
+        See all skills <span class="btn__arr" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <dialog class="skill-dialog skills-dialog" id="dlg-skills" aria-labelledby="dlg-skills-title" aria-describedby="dlg-skills-intro">
+      <div class="skill-dialog__inner">
+        <button class="skill-dialog__close" type="button" data-close aria-label="Close">×</button>
+        <p class="skill-dialog__kicker">§ Mycroft · installed skill set</p>
+        <h3 class="skill-dialog__title" id="dlg-skills-title">All <em>skills</em></h3>
+        <p class="skill-dialog__body skills-index__intro" id="dlg-skills-intro">The skills Mycroft installs, read directly from the metadata in each skill file.</p>
+        <p class="skills-index__status" id="skills-index-status" role="status">Loading the skills index…</p>
+        <div class="skills-index__grid" id="skills-index" role="list"></div>
+        <p class="skill-dialog__links"><a href="https://github.com/buriedsignals/mycroft/tree/main/skills" target="_blank" rel="noreferrer">browse the skills directory →</a></p>
+      </div>
+    </dialog>
 
     <dialog class="skill-dialog" id="dlg-brief" aria-labelledby="dlg-brief-title">
       <div class="skill-dialog__inner">
@@ -3127,18 +3294,17 @@ html.js .is-in .tw__in {
       <div class="skill-dialog__inner">
         <button class="skill-dialog__close" type="button" data-close aria-label="Close">×</button>
         <p class="skill-dialog__kicker">§ skill · knowledge-workspace</p>
-        <h3 class="skill-dialog__title" id="dlg-vault-title">The vault</h3>
-        <div class="skill-dialog__media" hidden>
-          <video controls muted loop playsinline preload="metadata" src="assets/vault-graph.mp4"></video>
-          <p class="skill-dialog__cap">The OpenKnowledge graph — every source, claim, and brief a node.</p>
-        </div>
-        <p class="skill-dialog__body">The workspace is the point. Everything Mycroft produces — briefs, source records, claims, findings — is journaled through OpenKnowledge on your own computer. Notes link to each other the way reporting actually connects: this source gave that quote, that claim rests on this document. Over weeks it grows into the graph you see above — your beat, mapped. Nothing syncs anywhere unless you decide it should, and the underlying Markdown remains portable.</p>
+        <h3 class="skill-dialog__title" id="dlg-vault-title">The wiki</h3>
+        <p class="skill-dialog__body">The workspace is the point. Everything Mycroft produces — briefs, source records, claims, findings — is journaled through <a href="https://github.com/inkeep/open-knowledge" target="_blank" rel="noreferrer">OpenKnowledge</a> on your own computer. Notes link to each other the way reporting actually connects: this source gave that quote, that claim rests on this document. Over weeks it becomes your beat, mapped. Nothing syncs anywhere unless you decide it should, and the underlying Markdown remains portable.</p>
         <ul class="skill-dialog__list" role="list">
           <li>Plain text files — readable in anything, forever</li>
           <li>Notes link sources ↔ claims ↔ stories</li>
           <li>Search it offline · grep it, sync it, archive it — it's yours</li>
         </ul>
-        <p class="skill-dialog__links"><a href="https://github.com/buriedsignals/mycroft/tree/main/skills/knowledge-primitives" target="_blank" rel="noreferrer">the vault structure →</a></p>
+        <p class="skill-dialog__links">
+          <a href="https://github.com/inkeep/open-knowledge" target="_blank" rel="noreferrer">OpenKnowledge →</a>
+          <a href="https://github.com/buriedsignals/mycroft/tree/main/skills/knowledge-primitives" target="_blank" rel="noreferrer">the wiki structure →</a>
+        </p>
       </div>
     </dialog>
 
@@ -3150,8 +3316,7 @@ html.js .is-in .tw__in {
     <header class="num" data-reveal><span class="num__n">03</span> The runtime</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
-      <h2 class="display display--section">Goose, Gemma,<br><em>OpenKnowledge</em></h2>
-      <p class="lead">Mycroft isn't an app. It's an extension pack for <a href="https://goose-docs.ai/" target="_blank" rel="noreferrer">Goose</a>, shipped with Gemma 4 31B running fully local — open-weight, quantization-aware, no cloud required. It uses OpenKnowledge as the local workspace where briefs, sources, claims, and findings stay searchable and connected.</p>
+      <h2 class="display display--section">Any subscription.<br><em>Prepared to run local</em></h2>
     </div>
 
     <div class="equation" data-cascade>
@@ -3167,10 +3332,10 @@ html.js .is-in .tw__in {
 
       <div class="term" style="--delay: 140ms">
         <span class="term__pre">↳ model</span>
-        <h3 class="term__name">Gemma 4</h3>
+        <h3 class="term__name">Your choice</h3>
         <span class="term__rule"></span>
-        <p class="term__role">local · open-weight</p>
-        <p class="term__spec">31B · QAT · GGUF</p>
+        <p class="term__role">any subscription · or on-device</p>
+        <p class="term__spec">cloud providers · optional local weights</p>
       </div>
 
       <div class="term-op" style="--delay: 340ms"><span>+</span></div>
@@ -3185,20 +3350,19 @@ html.js .is-in .tw__in {
     </div>
 
     <nav class="links-row" aria-label="Runtime resources" data-reveal style="--delay: 200ms">
-      <a href="https://huggingface.co/unsloth/gemma-4-31B-it-GGUF" target="_blank" rel="noreferrer">Download the 31B →</a>
       <a href="https://goose-docs.ai/" target="_blank" rel="noreferrer">Goose docs →</a>
       <a href="https://github.com/inkeep/open-knowledge" target="_blank" rel="noreferrer">OpenKnowledge →</a>
+      <a href="https://huggingface.co/unsloth/gemma-4-31B-it-GGUF" target="_blank" rel="noreferrer">Optional local model →</a>
     </nav>
   </section>
 
 
   <!-- ────────── 04 · PRIVACY ────────── -->
   <section class="sec" id="privacy" data-section="3">
-    <header class="num" data-reveal><span class="num__n">04</span> Privacy by default</header>
+    <header class="num" data-reveal><span class="num__n">04</span> Sovereign</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
-      <h2 class="display display--section">A <em>threat model.</em><br>Met</h2>
-      <p class="lead">Six commitments. Defaults, not options.</p>
+      <h2 class="display display--section">Research <em>privately</em></h2>
     </div>
 
     <p class="band band--proof" data-reveal style="--delay: 160ms">
@@ -3210,8 +3374,8 @@ html.js .is-in .tw__in {
       <article class="stamp" style="--delay: 0ms; --tilt: -1.4deg">
         <span class="stamp__seal" style="--seal-tilt: -8deg"><span>Default</span></span>
         <h3 class="stamp__title">Zero data retention</h3>
-        <p class="stamp__body">One ZDR cloud frontier: Fireworks serving GLM-5.2 on its own US GPUs — never routed to the origin lab.</p>
-        <p class="stamp__foot">Fireworks · GLM-5.2</p>
+        <p class="stamp__body">OpenRouter with GLM-5.2 is the recommended cloud default, with ZDR enforced per request and at the account level.</p>
+        <p class="stamp__foot">OpenRouter · GLM-5.2</p>
       </article>
 
       <article class="stamp" style="--delay: 100ms; --tilt: 1.1deg">
@@ -3224,13 +3388,13 @@ html.js .is-in .tw__in {
       <article class="stamp" style="--delay: 200ms; --tilt: -0.7deg">
         <span class="stamp__seal" style="--seal-tilt: -4deg"><span>Yours</span></span>
         <h3 class="stamp__title">Your keys, your machine</h3>
-        <p class="stamp__body">Setup is served from 127.0.0.1. Provider keys stay local; Navigator stores its revocable credential in the OS keychain.</p>
-        <p class="stamp__foot">Local configurator · OS keychain</p>
+        <p class="stamp__body">Keys stay in Engine’s operating-system credential broker. Indicator Labs provides the managed prompt; open-source users use the protected bsig stdin/keychain path. This site never collects them.</p>
+        <p class="stamp__foot">Engine · OS keychain</p>
       </article>
 
       <article class="stamp" style="--delay: 300ms; --tilt: 1.6deg">
         <span class="stamp__seal" style="--seal-tilt: 9deg"><span>Only</span></span>
-        <h3 class="stamp__title">Sovereign web by default</h3>
+        <h3 class="stamp__title">Local scraping</h3>
         <p class="stamp__body">SearXNG search and Crawl4AI scraping work without an account. Firecrawl is an optional fallback.</p>
         <p class="stamp__foot">SearXNG · Crawl4AI · optional Firecrawl</p>
       </article>
@@ -3252,81 +3416,72 @@ html.js .is-in .tw__in {
   </section>
 
 
-  <!-- ────────── 04bis · INTEGRATIONS · scoutpost + spotlight ──── -->
-  <section class="sec sec--integrations" id="integrations" data-section="3.5">
-    <header class="num" data-reveal><span class="num__n">04½</span> Integrations</header>
+  <!-- ────────── 05 · THE SUITE ────────── -->
+  <section class="sec sec--integrations" id="integrations" data-section="4">
+    <header class="num" data-reveal><span class="num__n">05</span> The suite</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
       <h2 class="display display--section">
-        Beat work,<br><em>wired in</em>
+        Connect to<br><em>the suite</em>
       </h2>
-      <p class="lead">
-        Goose hosts the runtime; Mycroft brings in the reporting tools.
-        Scoutpost monitors the beat, public Spotlight investigates leads,
-        Navigator adds Indicator member research capabilities, and Splash follows in September.
-      </p>
     </div>
 
     <div class="cards-3" data-reveal style="--delay: 160ms">
       <a class="card-int" href="https://scoutpost.ai/" target="_blank" rel="noreferrer">
         <div class="card-int__meta">
-          <span class="card-int__access">Free · Indicator members</span>
           <span class="card-int__kind">Monitoring</span>
         </div>
         <h3 class="card-int__title"><em>Scoutpost</em></h3>
         <p class="card-int__body">
-          Continuous awareness of your beat, including MuckRock sources on the
-          free tier. Indicator membership is connected through Navigator.
+          Monitor pages, beats, social profiles, councils, PDFs, and source lists,
+          with 1,000 monthly credits.
         </p>
       </a>
 
       <a class="card-int" href="https://spotlight.buriedsignals.com/" target="_blank" rel="noreferrer">
         <div class="card-int__meta">
-          <span class="card-int__access">Public</span>
           <span class="card-int__kind">Investigation</span>
         </div>
         <h3 class="card-int__title"><em>Spotlight</em></h3>
         <p class="card-int__body">
-          Deep-dive on a name, a company, a place. Spotlight runs
-          structured discovery across your sources and the open web —
-          with citations, no hallucinated quotes.
+          Turn a lead into a structured, source-linked investigation with an
+          approved methodology, adversarial review, and human approval gates.
         </p>
       </a>
 
       <a class="card-int" href="https://navigator.indicator.media/" target="_blank" rel="noreferrer">
         <div class="card-int__meta">
-          <span class="card-int__access">Indicator members</span>
-          <span class="card-int__kind">OSINT · Data</span>
+          <span class="card-int__kind">OSINT</span>
         </div>
-        <h3 class="card-int__title"><em>Navigator</em></h3>
+        <h3 class="card-int__title"><em>OSINT Navigator</em></h3>
         <p class="card-int__body">
-          Pro adds OSINT tool and method discovery. Lab includes that plus Data
-          Navigator for structured public-record sources and queries.
+          Search more than 13,000 OSINT tools, use Indicator’s investigative skills,
+          and connect your agent. Lab members get higher daily limits and enhanced
+          answers grounded in the Indicator archives.
         </p>
       </a>
 
       <article class="card-int card-int--coming">
         <div class="card-int__meta">
-          <span class="card-int__access">Coming September 2026</span>
+          <span class="card-int__access">Coming September 1st</span>
           <span class="card-int__kind">Visual journalism</span>
         </div>
         <h3 class="card-int__title"><em>Splash</em></h3>
         <p class="card-int__body">
-          Forthcoming workflows for charts, maps, explainers, and
-          publication-ready visual stories built from verified reporting.
+          Take source material and data through editorial framing, reviewed charts,
+          maps, scrollytelling, motion output, and delivery.
         </p>
       </article>
     </div>
   </section>
 
 
-  <!-- ────────── 05 · INSTALL ────────── -->
-  <section class="sec sec--dark" id="install" data-section="4">
-    <header class="num" data-reveal><span class="num__n">05</span> Install · five minutes</header>
+  <!-- ────────── 06 · INSTALL ────────── -->
+  <section class="sec sec--dark" id="install" data-section="5">
+    <header class="num" data-reveal><span class="num__n">06</span> Install</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
-      <h2 class="display display--section">One command.<br>Then <em>the browser</em></h2>
-      <p class="lead">The same public script runs for everyone. Configuration and optional Navigator sign-in happen on a local page served from your machine.</p>
+      <h2 class="display display--section">Same Mycroft.<br><em>CLI or desktop</em></h2>
     </div>
 
     <!-- Surface toggle: CLI terminal vs Desktop (Goose app) view -->
@@ -3340,42 +3495,41 @@ html.js .is-in .tw__in {
     <div class="terminal" data-arm>
       <div class="terminal__bar" aria-hidden="true">
         <span></span><span></span><span></span>
-        <span class="terminal__label">~/mycroft · setup</span>
+        <span class="terminal__label">Goose · Mycroft</span>
       </div>
 
       <div class="terminal__body">
         <div class="t-block">
-          <p class="t-line t-line--cmt"><span class="t-rn">i.</span> Run the static public installer. It never downloads Indicator Labs or Engine.</p>
-          <p class="t-line t-line--cmd"><span class="t-prompt">$</span> <span class="t-cmd">curl</span> <span class="t-flag">-fsSL</span> <span class="t-arg">https://mycroft.buriedsignals.com/install.sh</span> <span class="t-op">|</span> <span class="t-cmd">bash</span></p>
-          <p class="t-line t-line--out">public · signed channel · same script for everyone</p>
+          <p class="t-line t-line--cmt"><span class="t-rn">i.</span> After install, open a Goose session in the terminal.</p>
+          <p class="t-line t-line--cmd"><span class="t-prompt">$</span> <span class="t-cmd">goose</span> <span class="t-arg">session</span></p>
+          <p class="t-line t-line--out">Mycroft skills loaded · local vault attached</p>
         </div>
 
         <div class="t-block">
-          <p class="t-line t-line--cmt"><span class="t-rn">ii.</span> A local configurator opens on 127.0.0.1. Choose the runtime, vault, integrations, and Navigator Connect or Skip.</p>
-          <p class="t-line t-line--cmd"><span class="t-prompt">$</span> <span class="t-cmd">open</span> <span class="t-arg">http://127.0.0.1:&lt;local-port&gt;</span></p>
-          <p class="t-line t-line--out">keys stay local · skip keeps Navigator locked</p>
+          <p class="t-line t-line--cmt"><span class="t-rn">ii.</span> Run a recipe from the shell — same pack the desktop app uses.</p>
+          <p class="t-line t-line--cmd"><span class="t-prompt">$</span> <span class="t-cmd">goose</span> <span class="t-arg">run --recipe morning-brief</span></p>
+          <p class="t-line t-line--out">8 items · cited · written to vault</p>
         </div>
 
         <div class="t-block">
-          <p class="t-line t-line--cmt"><span class="t-rn">iii.</span> The signed public bundle installs Mycroft, Goose, OpenKnowledge, and the unified Navigator skill.</p>
-          <p class="t-line t-line--cmd"><span class="t-prompt">$</span> <span class="t-cmd">mycroft</span> <span class="t-arg">doctor</span></p>
-          <p class="t-line t-line--out">engine-free · cross-platform · update and uninstall receipts</p>
+          <p class="t-line t-line--cmt"><span class="t-rn">iii.</span> Switch to Desktop above for the same session in the Goose app.</p>
+          <p class="t-line t-line--cmd"><span class="t-prompt">↳</span> <span class="t-arg">same recipes · same keys · same wiki</span></p>
+          <p class="t-line t-line--out">CLI and desktop are two surfaces, not two products</p>
         </div>
 
         <div class="t-divider" aria-hidden="true"></div>
 
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> goose runtime · <span class="t-arg">installed</span></p>
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> gemma 4 31b weights · <span class="t-arg">loaded</span> (QAT q4)</p>
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> openknowledge workspace · <span class="t-arg">mycroft</span></p>
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> plugins enabled · <span class="t-arg">Spotlight · Scoutpost</span></p>
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> local-first mode · <span class="t-arg">ON</span></p>
-        <p class="t-line t-line--ok"><span class="t-tick">✓</span> zero data retention · <span class="t-arg">confirmed</span></p>
-        <p class="t-line t-line--ok t-line--ok-final"><span class="t-tick">✓</span> Mycroft is ready — <span class="t-arg">open a new terminal to begin.</span></p>
+        <p class="t-line t-line--ok"><span class="t-tick">✓</span> goose runtime · <span class="t-arg">ready</span></p>
+        <p class="t-line t-line--ok"><span class="t-tick">✓</span> <span data-skills-count>journalism skills</span> · <span class="t-arg">available</span></p>
+        <p class="t-line t-line--ok"><span class="t-tick">✓</span> local searchable wiki · <span class="t-arg">attached</span></p>
+        <p class="t-line t-line--ok"><span class="t-tick">✓</span> optional on-device model · <span class="t-arg">if you want it</span></p>
+        <p class="t-line t-line--ok"><span class="t-tick">✓</span> sibling tools · <span class="t-arg">Spotlight · Scoutpost · Navigator · Splash</span></p>
+        <p class="t-line t-line--ok t-line--ok-final"><span class="t-tick">✓</span> Mycroft is ready — <span class="t-arg">CLI or desktop.</span></p>
       </div>
 
       <div class="terminal__foot">
-        <a class="btn btn--solid btn--setup" href="setup.html">Set up</a>
-        <span class="terminal__meta">public script · local configuration · signed bundle</span>
+        <a class="btn btn--solid btn--setup" href="https://buriedsignals.com/join">Install</a>
+        <span class="terminal__meta">Indicator Lab includes install · CLI and desktop both work</span>
       </div>
     </div>
     </div><!-- /.surface--cli -->
@@ -3406,7 +3560,7 @@ html.js .is-in .tw__in {
             <div class="goose-app__chat-head">
               <div class="goose-app__session">
                 <strong>Mycroft morning brief</strong>
-                <span>gemma4-31b · local vault</span>
+                <span>local model · local wiki</span>
               </div>
               <span class="goose-app__status">Running</span>
             </div>
@@ -3429,8 +3583,8 @@ html.js .is-in .tw__in {
           </div>
         </div>
         <div class="goose-app__foot">
-          <a class="btn btn--solid btn--setup" href="setup.html">Set up</a>
-          <span class="goose-app__meta">desktop or CLI · same recipes · same keys</span>
+          <a class="btn btn--solid btn--setup" href="https://buriedsignals.com/join">Install</a>
+          <span class="goose-app__meta">CLI or desktop · same recipes · same vault</span>
         </div>
       </div>
     </div>
@@ -3438,13 +3592,12 @@ html.js .is-in .tw__in {
   </section>
 
 
-  <!-- ────────── 06 · TEAM ────────── -->
-  <section class="sec" id="team" data-section="5">
-    <header class="num" data-reveal><span class="num__n">06</span> From the team</header>
+  <!-- ────────── 07 · TEAM ────────── -->
+  <section class="sec" id="team" data-section="6">
+    <header class="num" data-reveal><span class="num__n">07</span> Membership</header>
 
     <div class="sec-head" data-reveal style="--delay: 80ms">
-      <h2 class="display display--section">Beyond the <em>tool</em></h2>
-      <p class="lead">Mycroft is the open tool. I help newsrooms go further.</p>
+      <h2 class="display display--section">Work with <em>me</em></h2>
     </div>
 
     <div class="equation equation--studio" data-cascade>
@@ -3455,7 +3608,7 @@ html.js .is-in .tw__in {
 
         <div class="term__body">
           <div class="indicator-lab-summary">
-            <p class="term__sub"><em>Indicator Lab combines the Buried Signals tool suite with a monthly investigation debrief, a practical Case Note, and office hours every two weeks.</em></p>
+            <p class="term__sub"><em>Indicator Lab combines the Buried Signals tool suite with a monthly live session with Tom Vaillant, concise Lab Notes, office hours every two weeks, and discounted investigation bootcamps. The suite includes guided install and updates for Mycroft and the rest of the stack.</em></p>
             <a class="indicator-lab-link" href="https://buriedsignals.com/join">Explore Indicator Lab <span class="btn__arr" aria-hidden="true">→</span></a>
           </div>
 
@@ -3495,28 +3648,21 @@ html.js .is-in .tw__in {
 
       <div class="term term--studio" style="--delay: 140ms">
         <span class="term__pre">↳ on request</span>
-        <h3 class="term__name">Consulting</h3>
+        <h3 class="term__name">Hire me</h3>
         <span class="term__rule"></span>
 
         <div class="term__body">
-          <p class="term__sub"><em>I train newsrooms to investigate with AI, then help wire the tooling into real editorial workflows.</em></p>
+          <p class="term__sub"><em>I train newsrooms to investigate with AI. Talks, workshops, custom tooling, and investigation collaborations.</em></p>
 
-          <ul class="srv-list" role="list">
-            <li class="srv">
-              <h4 class="srv__title">Workshops &amp; training</h4>
-              <p class="srv__desc">Hands-on AI investigation with live stories.</p>
-              <p class="srv__meta">Le Temps · MAZ · Republik · 20 Minuten</p>
-            </li>
-            <li class="srv">
-              <h4 class="srv__title">Custom AI tooling</h4>
-              <p class="srv__desc">Wired into your editorial workflow.</p>
-              <p class="srv__meta">MediaStorm</p>
-            </li>
-            <li class="srv">
-              <h4 class="srv__title">Investigation collaborations</h4>
-              <p class="srv__desc">Visual production paired with field reporting.</p>
-              <p class="srv__meta">The New Humanitarian</p>
-            </li>
+          <ul class="client-list" role="list">
+            <li>Le Temps</li>
+            <li>Al Jazeera</li>
+            <li>MAZ Journalistenschule</li>
+            <li>Republik</li>
+            <li>20 Minuten</li>
+            <li>SRF</li>
+            <li>MediaStorm</li>
+            <li>The New Humanitarian</li>
           </ul>
 
           <div class="term__actions">
@@ -3529,11 +3675,11 @@ html.js .is-in .tw__in {
   </section>
 
 
-  <!-- ────────── 07 · CLOSING ────────── -->
-  <section class="sec sec--closing" id="closing" data-section="6">
+  <!-- ────────── 08 · CLOSING ────────── -->
+  <section class="sec sec--closing" id="closing" data-section="7">
     <p class="closing__tag" data-reveal>Manifesto</p>
     <h2 class="display display--section" data-reveal style="--delay: 100ms">Bring the notebook.<br><em>Send the Goose</em></h2>
-    <p class="closing__line" data-reveal style="--delay: 220ms">— Open source · Self-hostable · No lock-in · No surveillance —</p>
+    <p class="closing__line" data-reveal style="--delay: 220ms">Local knowledge · Optional on-device model · Wired into the suite</p>
   </section>
 
 
@@ -3544,8 +3690,8 @@ html.js .is-in .tw__in {
       <li><a href="https://github.com/block/goose" target="_blank" rel="noreferrer">Goose</a> <span>— Block · the open-source runtime Mycroft is built on</span></li>
       <li><a href="https://github.com/jamditis/claude-skills-journalism" target="_blank" rel="noreferrer">Joe Amditis</a> <span>— five journalism skills, adapted · MIT</span></li>
       <li><a href="https://hapgood.us/2019/06/19/sift-the-four-moves/" target="_blank" rel="noreferrer">Mike Caulfield</a> <span>— the SIFT verification method</span></li>
+      <li><a href="https://verso.ink/big-if-true/" target="_blank" rel="noreferrer">Verso</a> <span>— Big If True · claim extraction and evidence routes in the fact-check</span></li>
       <li><a href="https://exiftool.org/" target="_blank" rel="noreferrer">exiftool</a> <span>— Phil Harvey · powers photo-metadata</span></li>
-      <li><a href="https://www.npmjs.com/package/@tobilu/qmd" target="_blank" rel="noreferrer">QMD</a> <span>— tobilu · local vault search</span></li>
       <li><a href="https://github.com/searxng/searxng" target="_blank" rel="noreferrer">SearXNG</a> <span>— self-hosted search behind sovereign mode · AGPL</span></li>
       <li><a href="https://github.com/unclecode/crawl4ai" target="_blank" rel="noreferrer">Crawl4AI</a> <span>— unclecode · the sovereign scraper</span></li>
       <li><a href="https://playwright.dev/" target="_blank" rel="noreferrer">Playwright</a> <span>— browser automation under the scraper</span></li>
@@ -3590,7 +3736,7 @@ html.js .is-in .tw__in {
       <section class="colophon__col">
         <h3>Resources</h3>
         <ul role="list">
-          <li><a href="setup.html">Set up</a></li>
+          <li><a href="https://buriedsignals.com/join">Install</a></li>
           <li><a href="https://github.com/buriedsignals/mycroft" target="_blank" rel="noreferrer">GitHub</a></li>
           <li><a href="https://huggingface.co/tomvaillant" target="_blank" rel="noreferrer">Hugging Face</a></li>
           <li><a href="https://goose-docs.ai/" target="_blank" rel="noreferrer">Goose docs</a></li>
@@ -8538,6 +8684,108 @@ export {
 <script>
 /* day-card skill dialogs */
 (function () {
+  var skillsPromise;
+
+  function frontmatterValue(markdown, key) {
+    var block = markdown.match(/^---\s*\n([\s\S]*?)\n---(?:\s*\n|$)/);
+    if (!block) throw new Error('Skill metadata is missing');
+    var match = block[1].match(new RegExp('^' + key + ':\\s*(.+)$', 'm'));
+    if (!match) throw new Error('Skill ' + key + ' is missing');
+    var value = match[1].trim();
+    if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+      try { return JSON.parse(value); } catch (error) { return value.slice(1, -1); }
+    }
+    if (value.charAt(0) === "'" && value.charAt(value.length - 1) === "'") {
+      return value.slice(1, -1).replace(/''/g, "'");
+    }
+    return value;
+  }
+
+  function skillTitle(markdown, fallback) {
+    var match = markdown.match(/^#\s+(.+)$/m);
+    return match ? match[1].trim() : fallback;
+  }
+
+  function renderSkills(skills) {
+    var index = document.getElementById('skills-index');
+    var status = document.getElementById('skills-index-status');
+    if (!index || !status) return;
+
+    skills.forEach(function (skill, position) {
+      var item = document.createElement('article');
+      var meta = document.createElement('p');
+      var number = document.createElement('span');
+      var id = document.createElement('span');
+      var title = document.createElement('h4');
+      var description = document.createElement('p');
+      var link = document.createElement('a');
+
+      item.className = 'skills-index__item';
+      item.setAttribute('role', 'listitem');
+      meta.className = 'skills-index__meta';
+      number.className = 'skills-index__number';
+      number.textContent = String(position + 1).padStart(2, '0');
+      id.textContent = skill.id;
+      title.className = 'skills-index__name';
+      title.textContent = skill.title;
+      description.className = 'skills-index__description';
+      description.textContent = skill.description.replace(/`/g, '');
+      link.className = 'skills-index__link';
+      link.href = 'https://github.com/buriedsignals/mycroft/blob/main/skills/' + encodeURIComponent(skill.id) + '/SKILL.md';
+      link.target = '_blank';
+      link.rel = 'noreferrer';
+      link.textContent = 'read the skill →';
+
+      meta.append(number, id);
+      item.append(meta, title, description, link);
+      index.append(item);
+    });
+
+    document.querySelectorAll('[data-skills-count]').forEach(function (node) {
+      node.textContent = skills.length + ' journalism skills';
+    });
+    status.hidden = true;
+  }
+
+  function loadSkills() {
+    if (skillsPromise) return skillsPromise;
+    var status = document.getElementById('skills-index-status');
+    skillsPromise = fetch('skills.manifest')
+      .then(function (response) {
+        if (!response.ok) throw new Error('Skills manifest could not be loaded');
+        return response.text();
+      })
+      .then(function (manifest) {
+        var ids = manifest.split(/\r?\n/).map(function (line) { return line.trim(); })
+          .filter(function (line) { return line && line.charAt(0) !== '#'; });
+        return Promise.all(ids.map(function (skillId) {
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(skillId)) throw new Error('Invalid skill id');
+          return fetch('skills/' + skillId + '/SKILL.md').then(function (response) {
+            if (!response.ok) throw new Error(skillId + ' could not be loaded');
+            return response.text();
+          }).then(function (markdown) {
+            return {
+              id: skillId,
+              name: frontmatterValue(markdown, 'name'),
+              title: skillTitle(markdown, frontmatterValue(markdown, 'name')),
+              description: frontmatterValue(markdown, 'description')
+            };
+          });
+        }));
+      })
+      .then(function (skills) {
+        renderSkills(skills);
+        return skills;
+      })
+      .catch(function () {
+        if (status) status.textContent = 'The skills index could not be loaded. Use the GitHub directory below.';
+      });
+    return skillsPromise;
+  }
+
+  var skillsButton = document.querySelector('[data-dialog="dlg-skills"]');
+  if (skillsButton) skillsButton.addEventListener('click', loadSkills);
+
   document.querySelectorAll('[data-dialog]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var dlg = document.getElementById(btn.dataset.dialog);
@@ -8565,13 +8813,6 @@ export {
       if (e.propertyName === 'transform') card.classList.add('is-settled');
     });
   });
-  /* the vault clip appears only once assets/vault-graph.mp4 exists */
-  var vid = document.querySelector('#dlg-vault video');
-  if (vid) {
-    vid.addEventListener('loadedmetadata', function () {
-      vid.closest('.skill-dialog__media').hidden = false;
-    }, { once: true });
-  }
 }());
 </script>
 </body>

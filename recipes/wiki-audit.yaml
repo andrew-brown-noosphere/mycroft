@@ -1,0 +1,74 @@
+version: "1.0.0"
+title: "Wiki audit"
+description: "Scheduled audit of the Mycroft OpenKnowledge wiki for stale notes, missing frontmatter, orphaned sources, weak claims, and approved Spotlight material already handed to Mycroft."
+
+instructions: |
+  Load the Mycroft journalism instructions, knowledge-primitives skill, and knowledge-workspace skill.
+  Audit the wiki. Do not rewrite the user's notes unless the task explicitly says to fix; by default, write a dated audit report.
+
+parameters:
+  - key: vault_path
+    input_type: string
+    requirement: required
+    description: "Mycroft OpenKnowledge workspace path."
+  - key: output_path
+    input_type: string
+    requirement: optional
+    description: "Directory for audit reports."
+    default: "~/Documents/OpenKnowledge/Mycroft/_audits"
+
+extensions:
+  - type: builtin
+    name: developer
+    description: "Shell + file access for reading the wiki and writing the audit report."
+  - type: stdio
+    name: openknowledge
+    cmd: ok
+    args: ["--cwd", "{{ vault_path }}", "mcp"]
+    # Goose advertises only the OpenKnowledge tools Mycroft uses (2026-09-14: 27 -> 15 tools, 27K -> 17K prompt tokens on this recipe).
+    available_tools: ["search", "exec", "write", "edit", "links", "lint", "history", "move", "delete"]
+
+prompt: |
+  Run a Mycroft wiki audit.
+
+  Use OpenKnowledge `links` for dead/orphan checks, `lint` for Markdown health, `search` for discovery, and `exec` for exact reads. Skip `.trash/` and binary files.
+
+  Check:
+
+  1. Missing or malformed frontmatter.
+  2. Source notes without URLs, paths, access dates, or confidence.
+  3. Claim notes without citations or verdicts.
+  4. Orphaned files not linked from `_index.md`, story notes, or wiki notes.
+  5. Raw source files that have no processed extract.
+  6. Spotlight handoffs under `handoff/from-spotlight/` that should become durable wiki notes or story pitches.
+  7. Story pitches that have no evidence links.
+  8. Sensitive notes that lack explicit `sensitive: true` frontmatter.
+
+  Do not inspect Spotlight's workspace or active cases during the audit. Audit only material already present in Mycroft's `handoff/from-spotlight/` folder.
+
+  Write a dated markdown report to `{{ output_path }}/wiki-audit-YYYY-MM-DD.md` with:
+
+  ```markdown
+  # Wiki Audit — YYYY-MM-DD
+
+  ## Summary
+
+  ## Needs Attention
+
+  ## Missing Frontmatter
+
+  ## Weak Claims
+
+  ## Orphaned Sources
+
+  ## Spotlight Handoffs
+
+  ## Suggested Next Actions
+  ```
+
+  Keep findings specific: include paths and short reasons.
+
+activities:
+  - "Run today's wiki audit"
+  - "Find weak claims and orphaned sources"
+  - "Review Spotlight handoffs"
